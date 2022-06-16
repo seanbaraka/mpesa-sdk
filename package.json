@@ -1,0 +1,45 @@
+{
+  "name": "@tashie/mpesa-sdk",
+  "version": "1.1.1",
+  "description": "mpesa sdk based on daraja2.0",
+  "main": "dist/mpesa-sdk.cjs.js",
+  "module": "dist/mpesa-sdk.esm.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "start:dev": "rollup -c -w",
+    "build": "rollup -c",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "files": [
+    "dist",
+    "types"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SeanBaraka/mpesa-sdk.git"
+  },
+  "keywords": [
+    "mpesa",
+    "daraja",
+    "nodejs-mpesa",
+    "safaricom",
+    "fintech"
+  ],
+  "author": "sean_baraka",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SeanBaraka/mpesa-sdk/issues"
+  },
+  "homepage": "https://github.com/SeanBaraka/mpesa-sdk#readme",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^22.0.0",
+    "@rollup/plugin-node-resolve": "^13.3.0",
+    "@types/node": "^17.0.31",
+    "axios": "^0.27.2",
+    "rollup": "^2.71.1",
+    "rollup-plugin-typescript2": "^0.31.2",
+    "ts-lib": "^0.0.5",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.4"
+  }
+}
