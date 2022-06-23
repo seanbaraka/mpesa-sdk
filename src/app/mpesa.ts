@@ -49,7 +49,7 @@ export class Mpesa {
         balanceQuery.CommandID = "AccountBalance" // explicitly set this to accountbalance
         // identifier types 1 – MSISDN, 2 – Till Number, 4 – Organization short code
         balanceQuery.IdentifierType = 4
-        const req = await axios.post(`${this.BASE_URL}/mpesa/accountbalance/v2/query`, JSON.stringify(balanceQuery), {
+        const req = await axios.post(`${this.BASE_URL}/mpesa/accountbalance/v1/query`, JSON.stringify(balanceQuery), {
             headers: { Authorization: 'Bearer ' + this.token }
         })
     }
