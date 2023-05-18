@@ -37,3 +37,11 @@ export interface AccountBalanceQueryConfig {
     QueueTimeOutURL: string;
     ResultURL: string;
 }
+
+export interface STKQuery {
+    amount: number;
+    sender: string;
+    reference: string;
+    callbackUrl: string;
+    description: string;
+}

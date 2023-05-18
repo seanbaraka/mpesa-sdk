@@ -1,4 +1,5 @@
-import { AccountBalanceQueryConfig, AuthResponse, B2CTransactionConfig, ClientConfig, UrlRegisterConfig } from "../interfaces";
+import dayjs from "dayjs";
+import { AccountBalanceQueryConfig, AuthResponse, B2CTransactionConfig, ClientConfig, STKQuery, UrlRegisterConfig } from "../interfaces";
 import axios from 'axios';
 
 export class Mpesa {
@@ -32,7 +33,7 @@ export class Mpesa {
 
     // 1. Register confirmation and validation urls
     async registerUrls(registerParams: UrlRegisterConfig) {
-        const req = await axios.post(`/mpesa/c2b/v1/registerurl`, registerParams, {
+        const req = await axios.post(`/mpesa/c2b/v2/registerurl`, registerParams, {
             headers: { Authorization: 'Bearer ' + this.token }
         })
         return req.data;
@@ -59,5 +60,35 @@ export class Mpesa {
         } catch(err) {
             throw err;
         }
+    }
+
+    async sendSTKPush(stkQuery: STKQuery) {
+        // YYYYMMDDHHmmss
+        const { amount, sender, callbackUrl, reference, description} = stkQuery
+        const now = Date.now();
+        const timestamp = dayjs(now).format("YYYYMMDDHHmmss");
+        const passkey = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919"
+        const password = Buffer.from(`${this.config.shortCode}+${passkey}+${timestamp}`)
+        try {
+            const request = await axios.post('/mpesa/stkpush/v1/processrequest', {    
+                "BusinessShortCode": this.config.shortCode,    
+                "Password": password, 
+                "Timestamp": timestamp,    
+                "TransactionType": "CustomerPayBillOnline",    
+                "Amount": amount,    
+                "PartyA": sender,    
+                "PartyB": this.config.shortCode,    
+                "PhoneNumber": sender,    
+                "CallBackURL": callbackUrl,    
+                "AccountReference": reference,    
+                "TransactionDesc": description
+             });
+             if (request.status == 200) {
+                return request.data
+             }
+        } catch (error) {
+            throw error;
+        }
+        
     }
 }
