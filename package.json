@@ -1,6 +1,6 @@
 {
   "name": "@tashie/mpesa-sdk",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "mpesa sdk based on daraja2.0",
   "main": "dist/mpesa-sdk.cjs.js",
   "module": "dist/mpesa-sdk.esm.js",
