@@ -97,7 +97,7 @@ export class Mpesa {
       "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
     const password = Buffer.from(
       `${this.config.shortCode}+${passkey}+${timestamp}`
-    );
+    ).toString("base64");
     try {
       const request = await axios.post(
         "/mpesa/stkpush/v1/processrequest",
