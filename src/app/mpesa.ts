@@ -18,7 +18,7 @@ export class Mpesa {
      * @returns 
      */
     async getAccessToken(): Promise<AuthResponse> {
-        const req = await axios.get(`${this.BASE_URL}/oauth/v2/generate?grant_type=client_credentials`, {
+        const req = await axios.get(`/oauth/v1/generate?grant_type=client_credentials`, {
             headers: { Authorization: 'Basic ' + Buffer.from(`${this.config.consumerKey}:${this.config.consumerSecret}`).toString("base64")}
         })
         const { access_token } = req.data
@@ -32,14 +32,14 @@ export class Mpesa {
 
     // 1. Register confirmation and validation urls
     async registerUrls(registerParams: UrlRegisterConfig) {
-        const req = await axios.post(`${this.BASE_URL}/mpesa/c2b/v2/registerurl`, JSON.stringify(registerParams), {
+        const req = await axios.post(`/mpesa/c2b/v1/registerurl`, registerParams, {
             headers: { Authorization: 'Bearer ' + this.token }
         })
         return req.data;
     }
 
     async B2C(b2cTransaction: B2CTransactionConfig) {
-        const req = await axios.post(`${this.BASE_URL}/mpesa/b2c/v2/paymentrequest`, JSON.stringify(b2cTransaction), {
+        const req = await axios.post(`/mpesa/b2c/v1/paymentrequest`, b2cTransaction, {
             headers: { Authorization: 'Bearer '+ this.token}
         })
         return req.data;
@@ -48,9 +48,16 @@ export class Mpesa {
     async getAccountBalance(balanceQuery: AccountBalanceQueryConfig) {
         balanceQuery.CommandID = "AccountBalance" // explicitly set this to accountbalance
         // identifier types 1 – MSISDN, 2 – Till Number, 4 – Organization short code
-        balanceQuery.IdentifierType = 4
-        const req = await axios.post(`${this.BASE_URL}/mpesa/accountbalance/v1/query`, JSON.stringify(balanceQuery), {
-            headers: { Authorization: 'Bearer ' + this.token }
-        })
+        balanceQuery.IdentifierType = "4"
+        try {
+            const req = await axios.post(`/mpesa/accountbalance/v1/query`, balanceQuery, {
+                headers: { Authorization: 'Bearer ' + this.token }
+            })
+            if (req.status == 200) {
+                return req.data;
+            }
+        } catch(err) {
+            throw err;
+        }
     }
 }

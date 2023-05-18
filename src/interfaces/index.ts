@@ -10,10 +10,10 @@ export interface ClientConfig {
     passphrase?: string;
 }
 export interface UrlRegisterConfig {
-    shortCode: string;
-    responseType: "Completed" | "Cancelled";
-    confirmationUrl: string;
-    validationUrl: string;
+    ShortCode: string;
+    ResponseType: "Completed" | "Cancelled";
+    ConfirmationURL: string;
+    ValidationURL: string;
 }
 export interface B2CTransactionConfig {
     InitiatorName: string;
@@ -28,9 +28,9 @@ export interface B2CTransactionConfig {
     Occassion: string;
 }
 export interface AccountBalanceQueryConfig {
-    CommandID: string;
+    CommandID?: string;
     PartyA: number;
-    IdentifierType: number;
+    IdentifierType?: string;
     Remarks: string;
     Initiator: string;
     SecurityCredential: string;
