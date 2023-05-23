@@ -8,6 +8,7 @@ export interface ClientConfig {
     environment: string;
     shortCode: string;
     passphrase?: string;
+    passKey?: string;
 }
 export interface UrlRegisterConfig {
     ShortCode: string;

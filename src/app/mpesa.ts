@@ -93,10 +93,9 @@ export class Mpesa {
     const { amount, sender, callbackUrl, reference, description } = stkQuery;
     const now = Date.now();
     const timestamp = dayjs(now).format("YYYYMMDDHHmmss");
-    const passkey =
-      "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
+    const passkey = this.config.passKey;
     const password = Buffer.from(
-      `${this.config.shortCode}+${passkey}+${timestamp}`
+      `${this.config.shortCode}${passkey}${timestamp}`
     ).toString("base64");
     try {
       const request = await axios.post(
