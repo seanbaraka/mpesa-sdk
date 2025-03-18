@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import {
   AccountBalanceQueryConfig,
   AuthResponse,
@@ -7,7 +6,6 @@ import {
   STKQuery,
   UrlRegisterConfig,
 } from "../interfaces";
-import axios from "axios";
 
 export class Mpesa {
   // declare the configurations passed when creating the client
@@ -20,7 +18,6 @@ export class Mpesa {
       ? (this.BASE_URL = "https://sandbox.safaricom.co.ke")
       : (this.BASE_URL = "https://api.safaricom.co.ke");
     this.config = configs;
-    axios.defaults.baseURL = this.BASE_URL;
   }
 
   /**
@@ -28,9 +25,10 @@ export class Mpesa {
    * @returns
    */
   async getAccessToken(): Promise<AuthResponse> {
-    const req = await axios.get(
-      `/oauth/v1/generate?grant_type=client_credentials`,
+    const response = await fetch(
+      `${this.BASE_URL}/oauth/v1/generate?grant_type=client_credentials`,
       {
+        method: "GET",
         headers: {
           Authorization:
             "Basic " +
@@ -40,9 +38,13 @@ export class Mpesa {
         },
       }
     );
-    const { access_token } = req.data;
-    this.token = access_token;
-    return req.data;
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    this.token = data.access_token;
+    return data;
   }
 
   /**
@@ -51,21 +53,34 @@ export class Mpesa {
 
   // 1. Register confirmation and validation urls
   async registerUrls(registerParams: UrlRegisterConfig) {
-    const req = await axios.post(`/mpesa/c2b/v2/registerurl`, registerParams, {
-      headers: { Authorization: "Bearer " + this.token },
+    const req = await fetch(`${this.BASE_URL}/mpesa/c2b/v1/registerurl`, {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + this.token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(registerParams),
     });
-    return req.data;
+    if (!req.ok) {
+      throw new Error(`HTTP error in registering you! Status: ${req.status}`);
+    }
+    const response = await req.json();
+    return response;
   }
-
   async B2C(b2cTransaction: B2CTransactionConfig) {
-    const req = await axios.post(
-      `/mpesa/b2c/v1/paymentrequest`,
-      b2cTransaction,
-      {
-        headers: { Authorization: "Bearer " + this.token },
-      }
-    );
-    return req.data;
+    const req = await fetch(`${this.BASE_URL}/mpesa/b2c/v3/paymentrequest`, {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + this.token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(b2cTransaction),
+    });
+    if (!req.ok) {
+      throw new Error(`HTTP error in B2C transaction! Status: ${req.status}`);
+    }
+    const response = await req.json();
+    return response;
   }
 
   async getAccountBalance(balanceQuery: AccountBalanceQueryConfig) {
@@ -73,16 +88,25 @@ export class Mpesa {
     // identifier types 1 – MSISDN, 2 – Till Number, 4 – Organization short code
     balanceQuery.IdentifierType = "4";
     try {
-      const req = await axios.post(
-        `/mpesa/accountbalance/v1/query`,
-        balanceQuery,
+      const req = await fetch(
+        `${this.BASE_URL}/mpesa/accountbalance/v1/query`,
         {
-          headers: { Authorization: "Bearer " + this.token },
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + this.token,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(balanceQuery),
         }
       );
-      if (req.status == 200) {
-        return req.data;
+      if (!req.ok) {
+        throw new Error(
+          `HTTP error in finding account balance! Status: ${req.status}`
+        );
       }
+
+      const response = await req.json();
+      return response;
     } catch (err) {
       throw err;
     }
@@ -91,35 +115,48 @@ export class Mpesa {
   async sendSTKPush(stkQuery: STKQuery) {
     // YYYYMMDDHHmmss
     const { amount, sender, callbackUrl, reference, description } = stkQuery;
-    const now = Date.now();
-    const timestamp = dayjs(now).format("YYYYMMDDHHmmss");
+    const now = new Date();
+    const timestamp = `${now.getFullYear()}${String(
+      now.getMonth() + 1
+    ).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}${String(
+      now.getHours()
+    ).padStart(2, "0")}${String(now.getMinutes()).padStart(2, "0")}${String(
+      now.getSeconds()
+    ).padStart(2, "0")}`;
     const passkey = this.config.passKey;
     const password = Buffer.from(
       `${this.config.shortCode}${passkey}${timestamp}`
     ).toString("base64");
     try {
-      const request = await axios.post(
-        "/mpesa/stkpush/v1/processrequest",
+      const response = await fetch(
+        `${this.BASE_URL}/mpesa/stkpush/v1/processrequest`,
         {
-          BusinessShortCode: this.config.shortCode,
-          Password: password,
-          Timestamp: timestamp,
-          TransactionType: "CustomerPayBillOnline",
-          Amount: amount,
-          PartyA: sender,
-          PartyB: this.config.shortCode,
-          PhoneNumber: sender,
-          CallBackURL: callbackUrl,
-          AccountReference: reference,
-          TransactionDesc: description,
-        },
-        {
-          headers: { Authorization: `Bearer ${this.token}` },
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${this.token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            BusinessShortCode: this.config.shortCode,
+            Password: password,
+            Timestamp: timestamp,
+            TransactionType: "CustomerPayBillOnline",
+            Amount: amount,
+            PartyA: sender,
+            PartyB: this.config.shortCode,
+            PhoneNumber: sender,
+            CallBackURL: callbackUrl,
+            AccountReference: reference,
+            TransactionDesc: description,
+          }),
         }
       );
-      if (request.status == 200) {
-        return request.data;
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
+
+      return await response.json();
     } catch (error) {
       throw error;
     }
