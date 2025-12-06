@@ -204,3 +204,20 @@ export interface RemittTaxQuery {
   QueueTimeOutURL: string;
   ResultURL: string;
 }
+
+export type B2BPaymentCommandID = "BusinessPayBill";
+export interface B2BPaymentQuery {
+  Initiator: string;
+  SecurityCredential: string;
+  CommandID: B2BPaymentCommandID;
+  SenderIdentifierType: string;
+  RecieverIdentifierType: string;
+  Amount: string;
+  PartyA: string;
+  PartyB: string;
+  AccountReference: string;
+  Requester: string;
+  Remarks: string;
+  QueueTimeOutURL: string;
+  ResultURL: string;
+}

@@ -12,6 +12,7 @@ import {
   UrlRegisterConfig,
   InitiateReversalQuery,
   RemittTaxQuery,
+  B2BPaymentQuery,
 } from "../interfaces";
 
 export class Mpesa {
@@ -235,6 +236,25 @@ export class Mpesa {
   async remittTax(remittTaxQuery: RemittTaxQuery) {
     const response = await fetch(
       `${this.BASE_URL}/mpesa/remitttax/v1/initiate`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + this.token,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data: APIResponseSuccessType = await response.json();
+    return data;
+  }
+
+  async initiateB2BPayment(b2bPaymentQuery: B2BPaymentQuery) {
+    const response = await fetch(
+      `${this.BASE_URL}/mpesa/b2b/v1/paymentrequest`,
       {
         method: "POST",
         headers: {
