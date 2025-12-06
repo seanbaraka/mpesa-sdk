@@ -4,6 +4,8 @@ import {
   AuthResponse,
   B2CTransactionConfig,
   ClientConfig,
+  DynamicQRCodeQuery,
+  DynamicQRCodeResponse,
   STKQuery,
   UrlRegisterConfig,
 } from "../interfaces";
@@ -160,5 +162,25 @@ export class Mpesa {
     } catch (error) {
       throw error;
     }
+  }
+
+  async generateDynamicQRCode(
+    dynamicQRCodeQuery: DynamicQRCodeQuery
+  ): Promise<DynamicQRCodeResponse> {
+    const response = await fetch(`${this.BASE_URL}/mpesa/qrcode/v1/generate`, {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + this.token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dynamicQRCodeQuery),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data: DynamicQRCodeResponse = await response.json();
+    return data;
   }
 }

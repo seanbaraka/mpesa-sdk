@@ -77,3 +77,34 @@ export interface STKQuery {
   callbackUrl: string;
   description: string;
 }
+
+/**
+ * This query enables you to generate a dynamic QR code for accepting payments
+ */
+export interface DynamicQRCodeQuery {
+  MerchantName: string;
+  RefNo: string;
+  Amount: number;
+  TrxCode: string;
+  CPI: string;
+  Size: string;
+}
+
+/**
+ * The response object for the dynamic QR code endpoint.
+ * ### Example Response
+ * ```json
+ * {
+ *     "ResponseCode": "AG_20191219_000043fdf61864fe9ff5",
+ *     "RequestID": "16738-27456357-1",
+ *     "ResponseDescription": "QR Code Successfully Generated.",
+ *     "QRCode": "iVBORw0KGgoAAAANSUhEUgAAASwAAAEsl..."
+ * }
+ * ```
+ */
+export interface DynamicQRCodeResponse {
+  ResponseCode: string;
+  RequestID: string;
+  ResponseDescription: string;
+  QRCode: string;
+}
