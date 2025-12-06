@@ -26,7 +26,7 @@ export interface ClientConfig {
  * ```json
  * {
  *     "expires_in": "3599", // The number of seconds the access token is valid for
- *     "access_token": "MTY3NDg5NjM5NzI5NjpvT2xQdmQ6MTpjaQ", // The access token
+ *     "access_token": "MTY3NDg5NjM5NzI....", // The access token
  * }
  * ```
  */
@@ -95,8 +95,8 @@ export interface DynamicQRCodeQuery {
  * ### Example Response
  * ```json
  * {
- *     "ResponseCode": "AG_20191219_000043fdf61864fe9ff5",
- *     "RequestID": "16738-27456357-1",
+ *     "ResponseCode": "AG_20191219_00004...",
+ *     "RequestID": "16738-27456357-...",
  *     "ResponseDescription": "QR Code Successfully Generated.",
  *     "QRCode": "iVBORw0KGgoAAAANSUhEUgAAASwAAAEsl..."
  * }
@@ -115,13 +115,13 @@ export interface DynamicQRCodeResponse {
  * ```json
  * {
  *     "Initiator": "testapiuser",
- *     "SecurityCredential": "ClONZiMYBpc65lmpJ7nvnrDmUe0WvHvA5QbOsPjEo92B6IGFwDdvdeJIFL0kgwsEKWu6SQKG4ZZUxjC",
+ *     "SecurityCredential": "ClONZiMYBpc65lmpJ7...",
  *     "TransactionID": "NEF61H8J60",
- *     "OriginalConversationID": "7071-4170-a0e5-8345632bad442144258",
+ *     "OriginalConversationID": "7071-4170-a0e5-8...",
  *     "PartyA": "600782",
  *     "IdentifierType": "4",
- *     "ResultURL": "http://myservice:8080/transactionstatus/result",
- *     "QueueTimeOutURL": "http://myservice:8080/timeout",
+ *     "ResultURL": "https://your-domain.com/transaction-status/result",
+ *     "QueueTimeOutURL": "https://your-domain.com/transaction-status/timeout",
  *     "Remarks": "OK",
  *     "Occasion": "OK"
  * }
@@ -164,8 +164,8 @@ export interface APIResponseSuccessType {
  * ### Example Query
  * ```json
  * {
- *     "Initiator": "apiop37",
- *     "SecurityCredential": "jUb+dOXJiBDui8FnruaFckZJQup3kmmCH5XJ4NY/Oo3KaUTmJbxUiVgzBjqdL533u5Q435MT2VJwr/ /1fuZvA===",
+ *     "Initiator": "testapi",
+ *     "SecurityCredential": "jUb+dOXJiBDuu5Q435MT2VJwr/...",
  *     "CommandID": "TransactionReversal",
  *     "TransactionID": "PDU91HIVIT",
  *     "Amount": "200",
