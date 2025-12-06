@@ -108,3 +108,53 @@ export interface DynamicQRCodeResponse {
   ResponseDescription: string;
   QRCode: string;
 }
+
+/**
+ * This query enables you to query the status of a transaction
+ * ### Example Query
+ * ```json
+ * {
+ *     "Initiator": "testapiuser",
+ *     "SecurityCredential": "ClONZiMYBpc65lmpJ7nvnrDmUe0WvHvA5QbOsPjEo92B6IGFwDdvdeJIFL0kgwsEKWu6SQKG4ZZUxjC",
+ *     "TransactionID": "NEF61H8J60",
+ *     "OriginalConversationID": "7071-4170-a0e5-8345632bad442144258",
+ *     "PartyA": "600782",
+ *     "IdentifierType": "4",
+ *     "ResultURL": "http://myservice:8080/transactionstatus/result",
+ *     "QueueTimeOutURL": "http://myservice:8080/timeout",
+ *     "Remarks": "OK",
+ *     "Occasion": "OK"
+ * }
+ * ```
+ */
+export interface TransactionStatusQuery {
+  Initiator: string;
+  SecurityCredential: string;
+  TransactionID: string;
+  OriginalConversationID: string;
+  PartyA: string;
+  IdentifierType: string;
+  ResultURL: string;
+  QueueTimeOutURL: string;
+  Remarks: string;
+  Occasion: string;
+}
+
+/**
+ * The response object for the transaction status endpoint.
+ * ### Example Response
+ * ```json
+ * {
+ *     "OriginatorConversationID": "1236-7134259-1",
+ *     "ConversationID": "AG_20210709_1234409f86436c583e3f",
+ *     "ResponseCode": "0",
+ *     "ResponseDescription": "Accept the service request successfully."
+ * }
+ * ```
+ */
+export interface TransactionStatusResponse {
+  OriginatorConversationID: string;
+  ConversationID: string;
+  ResponseCode: string;
+  ResponseDescription: string;
+}

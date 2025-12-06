@@ -7,6 +7,8 @@ import {
   DynamicQRCodeQuery,
   DynamicQRCodeResponse,
   STKQuery,
+  TransactionStatusQuery,
+  TransactionStatusResponse,
   UrlRegisterConfig,
 } from "../interfaces";
 
@@ -181,6 +183,27 @@ export class Mpesa {
     }
 
     const data: DynamicQRCodeResponse = await response.json();
+    return data;
+  }
+
+  async getTransactionStatus(transactionStatusQuery: TransactionStatusQuery) {
+    const response = await fetch(
+      `${this.BASE_URL}/mpesa/transactionstatus/v1/query`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + this.token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(transactionStatusQuery),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data: TransactionStatusResponse = await response.json();
     return data;
   }
 }
