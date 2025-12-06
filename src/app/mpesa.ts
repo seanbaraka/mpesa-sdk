@@ -8,8 +8,9 @@ import {
   DynamicQRCodeResponse,
   STKQuery,
   TransactionStatusQuery,
-  TransactionStatusResponse,
+  APIResponseSuccessType,
   UrlRegisterConfig,
+  InitiateReversalQuery,
 } from "../interfaces";
 
 export class Mpesa {
@@ -203,7 +204,30 @@ export class Mpesa {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
-    const data: TransactionStatusResponse = await response.json();
+    const data: APIResponseSuccessType = await response.json();
+    return data;
+  }
+
+  async initiateReversal(
+    initiateReversalQuery: InitiateReversalQuery
+  ): Promise<APIResponseSuccessType> {
+    const response = await fetch(
+      `${this.BASE_URL}/mpesa/reversal/v1/initiate`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + this.token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(initiateReversalQuery),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data: APIResponseSuccessType = await response.json();
     return data;
   }
 }

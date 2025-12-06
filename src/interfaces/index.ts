@@ -152,9 +152,40 @@ export interface TransactionStatusQuery {
  * }
  * ```
  */
-export interface TransactionStatusResponse {
+export interface APIResponseSuccessType {
   OriginatorConversationID: string;
   ConversationID: string;
   ResponseCode: string;
   ResponseDescription: string;
+}
+
+/**
+ * This query enables you to initiate a reversal of a transaction
+ * ### Example Query
+ * ```json
+ * {
+ *     "Initiator": "apiop37",
+ *     "SecurityCredential": "jUb+dOXJiBDui8FnruaFckZJQup3kmmCH5XJ4NY/Oo3KaUTmJbxUiVgzBjqdL533u5Q435MT2VJwr/ /1fuZvA===",
+ *     "CommandID": "TransactionReversal",
+ *     "TransactionID": "PDU91HIVIT",
+ *     "Amount": "200",
+ *     "ReceiverParty": "603021",
+ *     "RecieverIdentifierType": "11",
+ *     "ResultURL": "https://mydomain.com/reversal/result",
+ *     "QueueTimeOutURL": "https://mydomain.com/reversal/queue",
+ *     "Remarks": "Payment reversal"
+ * }
+ * ```
+ */
+export interface InitiateReversalQuery {
+  Initiator: string;
+  SecurityCredential: string;
+  CommandID: string;
+  TransactionID: string;
+  Amount: string;
+  ReceiverParty: string;
+  RecieverIdentifierType: string;
+  ResultURL: string;
+  QueueTimeOutURL: string;
+  Remarks: string;
 }
