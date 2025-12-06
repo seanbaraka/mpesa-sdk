@@ -189,3 +189,18 @@ export interface InitiateReversalQuery {
   QueueTimeOutURL: string;
   Remarks: string;
 }
+
+export interface RemittTaxQuery {
+  Initiator: string;
+  SecurityCredential: string;
+  CommandID: string;
+  SenderIdentifierType: string;
+  RecieverIdentifierType: string;
+  Amount: string;
+  PartyA: string;
+  PartyB: string;
+  AccountReference: string;
+  Remarks: string;
+  QueueTimeOutURL: string;
+  ResultURL: string;
+}

@@ -11,6 +11,7 @@ import {
   APIResponseSuccessType,
   UrlRegisterConfig,
   InitiateReversalQuery,
+  RemittTaxQuery,
 } from "../interfaces";
 
 export class Mpesa {
@@ -223,6 +224,25 @@ export class Mpesa {
       }
     );
 
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data: APIResponseSuccessType = await response.json();
+    return data;
+  }
+
+  async remittTax(remittTaxQuery: RemittTaxQuery) {
+    const response = await fetch(
+      `${this.BASE_URL}/mpesa/remitttax/v1/initiate`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + this.token,
+          "Content-Type": "application/json",
+        },
+      }
+    );
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
