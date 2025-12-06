@@ -13,6 +13,7 @@ import {
   InitiateReversalQuery,
   RemittTaxQuery,
   B2BPaymentQuery,
+  StandingOrderCreationQuery,
 } from "../interfaces";
 
 export class Mpesa {
@@ -242,6 +243,7 @@ export class Mpesa {
           Authorization: "Bearer " + this.token,
           "Content-Type": "application/json",
         },
+        body: JSON.stringify(remittTaxQuery),
       }
     );
     if (!response.ok) {
@@ -261,6 +263,35 @@ export class Mpesa {
           Authorization: "Bearer " + this.token,
           "Content-Type": "application/json",
         },
+        body: JSON.stringify(b2bPaymentQuery),
+      }
+    );
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data: APIResponseSuccessType = await response.json();
+    return data;
+  }
+
+  /**
+   * This API is intended for businesses who wish to integrate with standing orders for the automation of recurring revenue collection.
+   * This is a commercial API and will require communication with the safaricom team to enable the  M-pesa Ratiba product.
+   * @param {StandingOrderCreationQuery} standingOrderCreationQuery - The query to create a standing order
+   * @returns The response from the API
+   */
+  async createStandingOrder(
+    standingOrderCreationQuery: StandingOrderCreationQuery
+  ) {
+    const response = await fetch(
+      `${this.BASE_URL}/standingorder/v1/createStandingOrderExternal`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + this.token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(standingOrderCreationQuery),
       }
     );
     if (!response.ok) {

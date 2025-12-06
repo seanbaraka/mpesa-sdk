@@ -205,7 +205,11 @@ export interface RemittTaxQuery {
   ResultURL: string;
 }
 
-export type B2BPaymentCommandID = "BusinessPayBill";
+export type B2BPaymentCommandID =
+  | "BusinessPayBill"
+  | "BusinessBuyGoods"
+  | "BusinessPayToPochi"
+  | "BusinessPayToBulk";
 export interface B2BPaymentQuery {
   Initiator: string;
   SecurityCredential: string;
@@ -220,4 +224,19 @@ export interface B2BPaymentQuery {
   Remarks: string;
   QueueTimeOutURL: string;
   ResultURL: string;
+}
+
+export interface StandingOrderCreationQuery {
+  StandingOrderName: string;
+  StartDate: string;
+  EndDate: string;
+  BusinessShortCode: string;
+  TransactionType: string;
+  ReceiverPartyIdentifierType: string;
+  Amount: string;
+  PartyA: string;
+  CallBackURL: string;
+  AccountReference: string;
+  TransactionDesc: string;
+  Frequency: string;
 }
