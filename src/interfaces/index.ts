@@ -1,48 +1,242 @@
-export interface AuthResponse {
-    expires_in: string;
-    access_token: string;
+/**
+ * This file contains the interfaces for the Mpesa SDK. Some are derived from the Daraja API documentation, either as
+ * input parameters or response objects.
+ */
+
+/**
+ * The environment for the Mpesa SDK.
+ * This is either: `sandbox` or `production`.
+ */
+export enum Environment {
+  SANDBOX = "sandbox",
+  PRODUCTION = "production",
 }
+
 export interface ClientConfig {
-    consumerKey: string;
-    consumerSecret: string;
-    environment: string;
-    shortCode: string;
-    passphrase?: string;
-    passKey?: string;
+  consumerKey: string;
+  consumerSecret: string;
+  environment?: Environment;
+  shortCode: string;
+  passphrase?: string;
+  passKey?: string;
 }
+
+/**
+ * The response object for the authentication endpoint.
+ * ```json
+ * {
+ *     "expires_in": "3599", // The number of seconds the access token is valid for
+ *     "access_token": "MTY3NDg5NjM5NzI....", // The access token
+ * }
+ * ```
+ */
+export interface AuthResponse {
+  expires_in: string;
+  access_token: string;
+}
+
+/**
+ * The response type for the URL registration endpoint.
+ * This is either: `Completed` or `Cancelled`.
+ */
+export type UrlRegisterResposeType = "Completed" | "Cancelled";
+
 export interface UrlRegisterConfig {
-    ShortCode: string;
-    ResponseType: "Completed" | "Cancelled";
-    ConfirmationURL: string;
-    ValidationURL: string;
+  ShortCode: string;
+  ResponseType: UrlRegisterResposeType;
+  ConfirmationURL: string;
+  ValidationURL: string;
 }
 export interface B2CTransactionConfig {
-    InitiatorName: string;
-    SecurityCredential: string;
-    CommandID: string;
-    Amount: string;
-    PartyA: string;
-    PartyB: string;
-    Remarks: string;
-    QueueTimeOutURL: string;
-    ResultURL: string;
-    Occassion: string;
+  InitiatorName: string;
+  SecurityCredential: string;
+  CommandID: string;
+  Amount: string;
+  PartyA: string;
+  PartyB: string;
+  Remarks: string;
+  QueueTimeOutURL: string;
+  ResultURL: string;
+  Occassion: string;
 }
 export interface AccountBalanceQueryConfig {
-    CommandID?: string;
-    PartyA: number;
-    IdentifierType?: string;
-    Remarks: string;
-    Initiator: string;
-    SecurityCredential: string;
-    QueueTimeOutURL: string;
-    ResultURL: string;
+  CommandID?: string;
+  PartyA: number;
+  IdentifierType?: string;
+  Remarks: string;
+  Initiator: string;
+  SecurityCredential: string;
+  QueueTimeOutURL: string;
+  ResultURL: string;
 }
 
 export interface STKQuery {
-    amount: number;
-    sender: string;
-    reference: string;
-    callbackUrl: string;
-    description: string;
+  amount: number;
+  sender: string;
+  reference: string;
+  callbackUrl: string;
+  description: string;
+}
+
+/**
+ * This query enables you to generate a dynamic QR code for accepting payments
+ */
+export interface DynamicQRCodeQuery {
+  MerchantName: string;
+  RefNo: string;
+  Amount: number;
+  TrxCode: string;
+  CPI: string;
+  Size: string;
+}
+
+/**
+ * The response object for the dynamic QR code endpoint.
+ * ### Example Response
+ * ```json
+ * {
+ *     "ResponseCode": "AG_20191219_00004...",
+ *     "RequestID": "16738-27456357-...",
+ *     "ResponseDescription": "QR Code Successfully Generated.",
+ *     "QRCode": "iVBORw0KGgoAAAANSUhEUgAAASwAAAEsl..."
+ * }
+ * ```
+ */
+export interface DynamicQRCodeResponse {
+  ResponseCode: string;
+  RequestID: string;
+  ResponseDescription: string;
+  QRCode: string;
+}
+
+/**
+ * This query enables you to query the status of a transaction
+ * ### Example Query
+ * ```json
+ * {
+ *     "Initiator": "testapiuser",
+ *     "SecurityCredential": "ClONZiMYBpc65lmpJ7...",
+ *     "TransactionID": "NEF61H8J60",
+ *     "OriginalConversationID": "7071-4170-a0e5-8...",
+ *     "PartyA": "600782",
+ *     "IdentifierType": "4",
+ *     "ResultURL": "https://your-domain.com/transaction-status/result",
+ *     "QueueTimeOutURL": "https://your-domain.com/transaction-status/timeout",
+ *     "Remarks": "OK",
+ *     "Occasion": "OK"
+ * }
+ * ```
+ */
+export interface TransactionStatusQuery {
+  Initiator: string;
+  SecurityCredential: string;
+  TransactionID: string;
+  OriginalConversationID: string;
+  PartyA: string;
+  IdentifierType: string;
+  ResultURL: string;
+  QueueTimeOutURL: string;
+  Remarks: string;
+  Occasion: string;
+}
+
+/**
+ * The response object for the transaction status endpoint.
+ * ### Example Response
+ * ```json
+ * {
+ *     "OriginatorConversationID": "1236-7134259-1",
+ *     "ConversationID": "AG_20210709_1234409f86436c583e3f",
+ *     "ResponseCode": "0",
+ *     "ResponseDescription": "Accept the service request successfully."
+ * }
+ * ```
+ */
+export interface APIResponseSuccessType {
+  OriginatorConversationID: string;
+  ConversationID: string;
+  ResponseCode: string;
+  ResponseDescription: string;
+}
+
+/**
+ * This query enables you to initiate a reversal of a transaction
+ * ### Example Query
+ * ```json
+ * {
+ *     "Initiator": "testapi",
+ *     "SecurityCredential": "jUb+dOXJiBDuu5Q435MT2VJwr/...",
+ *     "CommandID": "TransactionReversal",
+ *     "TransactionID": "PDU91HIVIT",
+ *     "Amount": "200",
+ *     "ReceiverParty": "603021",
+ *     "RecieverIdentifierType": "11",
+ *     "ResultURL": "https://mydomain.com/reversal/result",
+ *     "QueueTimeOutURL": "https://mydomain.com/reversal/queue",
+ *     "Remarks": "Payment reversal"
+ * }
+ * ```
+ */
+export interface InitiateReversalQuery {
+  Initiator: string;
+  SecurityCredential: string;
+  CommandID: string;
+  TransactionID: string;
+  Amount: string;
+  ReceiverParty: string;
+  RecieverIdentifierType: string;
+  ResultURL: string;
+  QueueTimeOutURL: string;
+  Remarks: string;
+}
+
+export interface RemittTaxQuery {
+  Initiator: string;
+  SecurityCredential: string;
+  CommandID: string;
+  SenderIdentifierType: string;
+  RecieverIdentifierType: string;
+  Amount: string;
+  PartyA: string;
+  PartyB: string;
+  AccountReference: string;
+  Remarks: string;
+  QueueTimeOutURL: string;
+  ResultURL: string;
+}
+
+export type B2BPaymentCommandID =
+  | "BusinessPayBill"
+  | "BusinessBuyGoods"
+  | "BusinessPayToPochi"
+  | "BusinessPayToBulk";
+export interface B2BPaymentQuery {
+  Initiator: string;
+  SecurityCredential: string;
+  CommandID: B2BPaymentCommandID;
+  SenderIdentifierType: string;
+  RecieverIdentifierType: string;
+  Amount: string;
+  PartyA: string;
+  PartyB: string;
+  AccountReference: string;
+  Requester: string;
+  Remarks: string;
+  QueueTimeOutURL: string;
+  ResultURL: string;
+}
+
+export interface StandingOrderCreationQuery {
+  StandingOrderName: string;
+  StartDate: string;
+  EndDate: string;
+  BusinessShortCode: string;
+  TransactionType: string;
+  ReceiverPartyIdentifierType: string;
+  Amount: string;
+  PartyA: string;
+  CallBackURL: string;
+  AccountReference: string;
+  TransactionDesc: string;
+  Frequency: string;
 }

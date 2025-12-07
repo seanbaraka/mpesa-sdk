@@ -1,0 +1,10 @@
+# Bun configuration file
+# https://bun.sh/docs/cli/bunfig
+
+[install]
+# Use faster installs
+auto = true
+
+[install.scopes]
+# Scope-specific configuration if needed
+

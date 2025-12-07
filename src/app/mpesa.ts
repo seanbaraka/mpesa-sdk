@@ -4,10 +4,17 @@ import {
   AuthResponse,
   B2CTransactionConfig,
   ClientConfig,
+  DynamicQRCodeQuery,
+  DynamicQRCodeResponse,
   STKQuery,
+  TransactionStatusQuery,
+  APIResponseSuccessType,
   UrlRegisterConfig,
+  InitiateReversalQuery,
+  RemittTaxQuery,
+  B2BPaymentQuery,
+  StandingOrderCreationQuery,
 } from "../interfaces";
-import axios from "axios";
 
 export class Mpesa {
   // declare the configurations passed when creating the client
@@ -20,7 +27,6 @@ export class Mpesa {
       ? (this.BASE_URL = "https://sandbox.safaricom.co.ke")
       : (this.BASE_URL = "https://api.safaricom.co.ke");
     this.config = configs;
-    axios.defaults.baseURL = this.BASE_URL;
   }
 
   /**
@@ -28,9 +34,10 @@ export class Mpesa {
    * @returns
    */
   async getAccessToken(): Promise<AuthResponse> {
-    const req = await axios.get(
-      `/oauth/v1/generate?grant_type=client_credentials`,
+    const response = await fetch(
+      `${this.BASE_URL}/oauth/v1/generate?grant_type=client_credentials`,
       {
+        method: "GET",
         headers: {
           Authorization:
             "Basic " +
@@ -40,9 +47,14 @@ export class Mpesa {
         },
       }
     );
-    const { access_token } = req.data;
-    this.token = access_token;
-    return req.data;
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data: AuthResponse = await response.json();
+    this.token = data.access_token;
+    return data;
   }
 
   /**
@@ -51,21 +63,40 @@ export class Mpesa {
 
   // 1. Register confirmation and validation urls
   async registerUrls(registerParams: UrlRegisterConfig) {
-    const req = await axios.post(`/mpesa/c2b/v2/registerurl`, registerParams, {
-      headers: { Authorization: "Bearer " + this.token },
+    const response = await fetch(`${this.BASE_URL}/mpesa/c2b/v2/registerurl`, {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + this.token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(registerParams),
     });
-    return req.data;
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    return await response.json();
   }
 
   async B2C(b2cTransaction: B2CTransactionConfig) {
-    const req = await axios.post(
-      `/mpesa/b2c/v1/paymentrequest`,
-      b2cTransaction,
+    const response = await fetch(
+      `${this.BASE_URL}/mpesa/b2c/v1/paymentrequest`,
       {
-        headers: { Authorization: "Bearer " + this.token },
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + this.token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(b2cTransaction),
       }
     );
-    return req.data;
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    return await response.json();
   }
 
   async getAccountBalance(balanceQuery: AccountBalanceQueryConfig) {
@@ -73,16 +104,23 @@ export class Mpesa {
     // identifier types 1 – MSISDN, 2 – Till Number, 4 – Organization short code
     balanceQuery.IdentifierType = "4";
     try {
-      const req = await axios.post(
-        `/mpesa/accountbalance/v1/query`,
-        balanceQuery,
+      const response = await fetch(
+        `${this.BASE_URL}/mpesa/accountbalance/v1/query`,
         {
-          headers: { Authorization: "Bearer " + this.token },
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + this.token,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(balanceQuery),
         }
       );
-      if (req.status == 200) {
-        return req.data;
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
+
+      return await response.json();
     } catch (err) {
       throw err;
     }
@@ -98,30 +136,169 @@ export class Mpesa {
       `${this.config.shortCode}${passkey}${timestamp}`
     ).toString("base64");
     try {
-      const request = await axios.post(
-        "/mpesa/stkpush/v1/processrequest",
+      const response = await fetch(
+        `${this.BASE_URL}/mpesa/stkpush/v1/processrequest`,
         {
-          BusinessShortCode: this.config.shortCode,
-          Password: password,
-          Timestamp: timestamp,
-          TransactionType: "CustomerPayBillOnline",
-          Amount: amount,
-          PartyA: sender,
-          PartyB: this.config.shortCode,
-          PhoneNumber: sender,
-          CallBackURL: callbackUrl,
-          AccountReference: reference,
-          TransactionDesc: description,
-        },
-        {
-          headers: { Authorization: `Bearer ${this.token}` },
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${this.token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            BusinessShortCode: this.config.shortCode,
+            Password: password,
+            Timestamp: timestamp,
+            TransactionType: "CustomerPayBillOnline",
+            Amount: amount,
+            PartyA: sender,
+            PartyB: this.config.shortCode,
+            PhoneNumber: sender,
+            CallBackURL: callbackUrl,
+            AccountReference: reference,
+            TransactionDesc: description,
+          }),
         }
       );
-      if (request.status == 200) {
-        return request.data;
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
+
+      return await response.json();
     } catch (error) {
       throw error;
     }
+  }
+
+  async generateDynamicQRCode(
+    dynamicQRCodeQuery: DynamicQRCodeQuery
+  ): Promise<DynamicQRCodeResponse> {
+    const response = await fetch(`${this.BASE_URL}/mpesa/qrcode/v1/generate`, {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + this.token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dynamicQRCodeQuery),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data: DynamicQRCodeResponse = await response.json();
+    return data;
+  }
+
+  async getTransactionStatus(transactionStatusQuery: TransactionStatusQuery) {
+    const response = await fetch(
+      `${this.BASE_URL}/mpesa/transactionstatus/v1/query`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + this.token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(transactionStatusQuery),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data: APIResponseSuccessType = await response.json();
+    return data;
+  }
+
+  async initiateReversal(
+    initiateReversalQuery: InitiateReversalQuery
+  ): Promise<APIResponseSuccessType> {
+    const response = await fetch(
+      `${this.BASE_URL}/mpesa/reversal/v1/initiate`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + this.token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(initiateReversalQuery),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data: APIResponseSuccessType = await response.json();
+    return data;
+  }
+
+  async remittTax(remittTaxQuery: RemittTaxQuery) {
+    const response = await fetch(
+      `${this.BASE_URL}/mpesa/remitttax/v1/initiate`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + this.token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(remittTaxQuery),
+      }
+    );
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data: APIResponseSuccessType = await response.json();
+    return data;
+  }
+
+  async initiateB2BPayment(b2bPaymentQuery: B2BPaymentQuery) {
+    const response = await fetch(
+      `${this.BASE_URL}/mpesa/b2b/v1/paymentrequest`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + this.token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(b2bPaymentQuery),
+      }
+    );
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data: APIResponseSuccessType = await response.json();
+    return data;
+  }
+
+  /**
+   * This API is intended for businesses who wish to integrate with standing orders for the automation of recurring revenue collection.
+   * This is a commercial API and will require communication with the safaricom team to enable the  M-pesa Ratiba product.
+   * @param {StandingOrderCreationQuery} standingOrderCreationQuery - The query to create a standing order
+   * @returns The response from the API
+   */
+  async createStandingOrder(
+    standingOrderCreationQuery: StandingOrderCreationQuery
+  ) {
+    const response = await fetch(
+      `${this.BASE_URL}/standingorder/v1/createStandingOrderExternal`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + this.token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(standingOrderCreationQuery),
+      }
+    );
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data: APIResponseSuccessType = await response.json();
+    return data;
   }
 }

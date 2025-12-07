@@ -1,0 +1,33 @@
+{
+  "name": "mpesa-express-example",
+  "version": "1.0.0",
+  "description": "Express.js example application using @tashie/mpesa-sdk with Bun",
+  "main": "server.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "bun --watch server.ts",
+    "start": "bun server.ts",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "mpesa",
+    "express",
+    "daraja",
+    "safaricom",
+    "bun"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@tashie/mpesa-sdk": "file:../../",
+    "cors": "^2.8.5",
+    "express": "^4.21.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  }
+}
+
