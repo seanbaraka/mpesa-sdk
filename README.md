@@ -374,9 +374,9 @@ ISC
 
 <div align="center">
 
-**Built with ❤️ for the Node.js community**
+**Built with ❤️ by [sean](https://seanbaraka.dev) for the Node.js community**
 
-![Safaricom](https://developer.safaricom.co.ke/sites/default/files/2020-09/safaricom-logo.png)
+![Safaricom MPesa](https://developer.safaricom.co.ke/saf-logo.svg)
 
 _MPesa and Safaricom are trademarks of Safaricom PLC_
 
