@@ -4,6 +4,14 @@
   "description": "Mpesa sdk based on daraja2.0 for the nodejs lovers",
   "main": "dist/mpesa-sdk.cjs.js",
   "module": "dist/mpesa-sdk.esm.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/mpesa-sdk.esm.js",
+      "require": "./dist/mpesa-sdk.cjs.js",
+      "default": "./dist/mpesa-sdk.esm.js"
+    }
+  },
   "types": "dist/index.d.ts",
   "scripts": {
     "start:dev": "rollup -c -w",

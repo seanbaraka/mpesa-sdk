@@ -4,6 +4,7 @@ import { getMpesaService } from "./services/mpesa.service";
 import { errorHandler } from "./middleware/errorHandler";
 import mpesaRoutes from "./routes/mpesa.routes";
 import callbackRoutes from "./routes/callbacks.routes";
+import { ClientConfig } from "@tashie/mpesa-sdk";
 
 const app: Express = express();
 
@@ -49,7 +50,7 @@ if (missingEnvVars.length > 0) {
 }
 
 // Initialize MPesa service
-getMpesaService(mpesaConfig);
+getMpesaService(mpesaConfig as ClientConfig);
 
 // Health check endpoint
 app.get("/health", (req: express.Request, res: express.Response) => {
