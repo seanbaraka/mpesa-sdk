@@ -1,9 +1,8 @@
 import { Mpesa } from "@tashie/mpesa-sdk";
-import type { ClientConfig } from "@tashie/mpesa-sdk";
-
+import { ClientConfig } from "@tashie/mpesa-sdk";
 /**
  * MPesa Service with Token Management
- * 
+ *
  * Best Practice: Cache access tokens and refresh them automatically
  * to avoid unnecessary API calls and improve performance.
  */
@@ -27,10 +26,7 @@ class MpesaService {
     const bufferTime = 60000; // 1 minute buffer before expiry
 
     // Check if we have a valid cached token
-    if (
-      this.tokenCache &&
-      this.tokenCache.expiresAt > now + bufferTime
-    ) {
+    if (this.tokenCache && this.tokenCache.expiresAt > now + bufferTime) {
       return this.tokenCache.token;
     }
 
@@ -38,7 +34,7 @@ class MpesaService {
     try {
       const authResponse = await this.mpesa.getAccessToken();
       const expiresIn = parseInt(authResponse.expires_in) * 1000; // Convert to milliseconds
-      
+
       this.tokenCache = {
         token: authResponse.access_token,
         expiresAt: now + expiresIn,
@@ -79,6 +75,18 @@ class MpesaService {
     await this.ensureToken();
     return this.mpesa.getAccountBalance(params);
   }
+
+  async initiateB2BPayment(params: Parameters<Mpesa["initiateB2BPayment"]>[0]) {
+    await this.ensureToken();
+    return this.mpesa.initiateB2BPayment(params);
+  }
+
+  async getTransactionStatus(
+    params: Parameters<Mpesa["getTransactionStatus"]>[0]
+  ) {
+    await this.ensureToken();
+    return this.mpesa.getTransactionStatus(params);
+  }
 }
 
 // Singleton instance
@@ -87,7 +95,9 @@ let mpesaServiceInstance: MpesaService | null = null;
 export function getMpesaService(config?: ClientConfig): MpesaService {
   if (!mpesaServiceInstance) {
     if (!config) {
-      throw new Error("MPesa service not initialized. Provide config on first call.");
+      throw new Error(
+        "MPesa service not initialized. Provide config on first call."
+      );
     }
     mpesaServiceInstance = new MpesaService(config);
   }
@@ -95,4 +105,3 @@ export function getMpesaService(config?: ClientConfig): MpesaService {
 }
 
 export { MpesaService };
-

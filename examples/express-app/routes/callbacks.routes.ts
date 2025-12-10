@@ -6,7 +6,7 @@ const router = Router();
 /**
  * STK Push Callback
  * POST /api/mpesa/callbacks/stk
- * 
+ *
  * This endpoint receives the result of an STK Push transaction
  */
 router.post(
@@ -14,7 +14,10 @@ router.post(
   asyncHandler(async (req: Request, res: Response) => {
     const callbackData = req.body;
 
-    console.log("STK Push Callback received:", JSON.stringify(callbackData, null, 2));
+    console.log(
+      "STK Push Callback received:",
+      JSON.stringify(callbackData, null, 2)
+    );
 
     // Extract key information
     const {
@@ -32,14 +35,18 @@ router.post(
     if (ResultCode === 0) {
       // Transaction successful
       const metadata = CallbackMetadata?.Item || [];
-      const amount = metadata.find((item: any) => item.Name === "Amount")?.Value;
+      const amount = metadata.find(
+        (item: any) => item.Name === "Amount"
+      )?.Value;
       const mpesaReceiptNumber = metadata.find(
         (item: any) => item.Name === "MpesaReceiptNumber"
       )?.Value;
       const transactionDate = metadata.find(
         (item: any) => item.Name === "TransactionDate"
       )?.Value;
-      const phoneNumber = metadata.find((item: any) => item.Name === "PhoneNumber")?.Value;
+      const phoneNumber = metadata.find(
+        (item: any) => item.Name === "PhoneNumber"
+      )?.Value;
 
       console.log("Payment successful:", {
         mpesaReceiptNumber,
@@ -90,7 +97,10 @@ router.post(
   asyncHandler(async (req: Request, res: Response) => {
     const callbackData = req.body;
 
-    console.log("B2C Result Callback received:", JSON.stringify(callbackData, null, 2));
+    console.log(
+      "B2C Result Callback received:",
+      JSON.stringify(callbackData, null, 2)
+    );
 
     const {
       Result: {
@@ -137,7 +147,10 @@ router.post(
 router.post(
   "/b2c-timeout",
   asyncHandler(async (req: Request, res: Response) => {
-    console.log("B2C Timeout Callback received:", JSON.stringify(req.body, null, 2));
+    console.log(
+      "B2C Timeout Callback received:",
+      JSON.stringify(req.body, null, 2)
+    );
     // TODO: Handle timeout scenario
     res.status(200).json({ status: "received" });
   })
@@ -150,7 +163,10 @@ router.post(
 router.post(
   "/balance-result",
   asyncHandler(async (req: Request, res: Response) => {
-    console.log("Balance Result Callback received:", JSON.stringify(req.body, null, 2));
+    console.log(
+      "Balance Result Callback received:",
+      JSON.stringify(req.body, null, 2)
+    );
     // TODO: Process balance query result
     res.status(200).json({ status: "received" });
   })
@@ -163,10 +179,45 @@ router.post(
 router.post(
   "/balance-timeout",
   asyncHandler(async (req: Request, res: Response) => {
-    console.log("Balance Timeout Callback received:", JSON.stringify(req.body, null, 2));
+    console.log(
+      "Balance Timeout Callback received:",
+      JSON.stringify(req.body, null, 2)
+    );
+    res.status(200).json({ status: "received" });
+  })
+);
+
+router.post(
+  "/b2b-result",
+  asyncHandler(async (req: Request, res: Response) => {
+    console.log(
+      "B2B Result Callback received:",
+      JSON.stringify(req.body, null, 2)
+    );
+    res.status(200).json({ status: "received" });
+  })
+);
+
+router.post(
+  "/b2b-timeout",
+  asyncHandler(async (req: Request, res: Response) => {
+    console.log(
+      "B2B Timeout Callback received:",
+      JSON.stringify(req.body, null, 2)
+    );
+    res.status(200).json({ status: "received" });
+  })
+);
+
+router.post(
+  "/transaction-status-result",
+  asyncHandler(async (req: Request, res: Response) => {
+    console.log(
+      "Transaction Status Result Callback received:",
+      JSON.stringify(req.body, null, 2)
+    );
     res.status(200).json({ status: "received" });
   })
 );
 
 export default router;
-
